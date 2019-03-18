@@ -1,0 +1,7 @@
+fichier = open("Classe.csv", mode = 'w')
+fichier.write("ID; NOM; PRENOM; DATENAISSANCE; SEXE; EMAIL\n")
+fichier.write("010101;GARBO;ALAN;15/05/1973;agarbo@emd-management.fr\n")
+fichier.write("034563;GALIERE;SAMUEL;04/11/2004;sgaliere@emd-management.fr\n")
+fichier.write("777777;MARTINEZ;MARC;20/02/1997;marc.martinez@emd-management.fr\n")
+fichier.write("204505;DELAMARCHE;EMILE;12/03/1999;edelamarche@emd-management.fr\n")
+fichier.close()
