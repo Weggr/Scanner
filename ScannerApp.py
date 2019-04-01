@@ -26,7 +26,19 @@ class ScannerApp(App):
             'è':'7',
             '_':'8',
             'ç':'9',
-            'à':'0'
+            'à':'0',
+            'q':'a',
+            'w':'z',
+            'a':'q',
+            'z':'w',
+            'Q':'A',
+            'W':'Z',
+            'A':'Q',
+            'Z':'W',
+            'm':';',
+            'M':':',
+            ',':'m',
+            '?':'M'
         }
         return dictionnaire.get(argument, "Invalid letter")
 
