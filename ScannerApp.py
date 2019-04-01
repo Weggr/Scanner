@@ -5,13 +5,17 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
 from kivy.properties import StringProperty
 from kivy.uix.widget import Widget
+from kivy.clock import Clock
+import datetime
 
 
 class ScannerApp(App):
 
+    resultat = ''
+    compteur = 0
+    compteurRésultat = 0
 
-
-    def switch_letter(argument):
+    def switch_letter(self,argument):
         dictionnaire = {
             '&':'1',
             'é':'2',
@@ -27,18 +31,21 @@ class ScannerApp(App):
         return dictionnaire.get(argument, "Invalid letter")
 
 
-    def on_text(instance, value):
+    def on_text(self, value):
         return value
+    def refocus_ti(self,*args):
+        self.recherche.focus = True
 
-    def callback(self,instance):
-        resultat = ''
-        compteur2 = 0;
-        compteur = 0;
+    def callback(self, text):
+        compteur2 = 0
         ID = self.recherche.text
+        self.recherche.text = ''
+        Clock.schedule_once(self.refocus_ti)
         ID2 = ''
+        #import pdb; pdb.set_trace()
         for x in ID :
             x2 = x
-            x2 = self.switch_letter()
+            x2 = self.switch_letter(x)
             if(x2 != "Invalid letter"):
                 ID2=ID2+x2
             else:
@@ -46,32 +53,35 @@ class ScannerApp(App):
 
         self.label2.text = ID2
 
-        fichier = open("Classe.csv", mode = 'r')
-        for l in fichier.readlines():
+        fichier1 = open("Classe.csv", mode = 'r')
+        fichier2 = open("Presences.csv", mode = 'a')
+        for l in fichier1.readlines():
             if (l.split(";")[0] == ID2):
                 compteur2=1
-                if(compteur == 0):
-                    resultat = "\nEtudiant : " + l.split(";")[1] + " " + l.split(";")[2]+ " présent";
-                    compteur = 1
+                if(self.compteur == 0):
+                    self.resultat = "\nEtudiant : " + l.split(";")[1] + " " + l.split(";")[2]+ " présent à " + str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'));
+                    self.compteur = 1
                 else:
-                    resultat = resultat + "\nEtudiant : " + l.split(";")[1] + " " + l.split(";")[2]+ " présent";
+                    self.resultat = self.resultat + "\nEtudiant : " + l.split(";")[1] + " " + l.split(";")[2]+ " présent à "+ str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'));
+                fichier2.write(ID2 +";"+ l.split(";")[1] +";"+ l.split(";")[2] +";"+ str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))+"\n")
         if (compteur2 == 0):
             print("Badgage effectuée : Badge non reconnu")
             print("\n")
-            resultat = resultat + "\nBadge Inconnu"
+            self.resultat = self.resultat + "\nBadge Inconnu à " + str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'));
         else:
             print("Badgage effectuée : Badge reconnu")
             print("\n")
 
-        fichier.close()
-        self.label2.text = resultat
+        fichier1.close()
+        fichier2.close()
+        self.label2.text = self.resultat
 
 
 
     def build(self):
         horizontalBox   = BoxLayout(orientation='horizontal', spacing = 5)
         horizontalBox.add_widget(Label(text=' ID du \nbadge :',size_hint=(0.3,1)))
-        self.recherche = TextInput(multiline=False)
+        self.recherche = TextInput(multiline=False, password =True)
         self.recherche.focus = True
         self.recherche.bind(on_text_validate=self.callback)
         horizontalBox.add_widget(self.recherche)
